@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo
+  labels:
+    app: odoo
+spec:
+  replicas: {{ .Values.odoo.replicas }}
+  selector:
+    matchLabels:
+      app: odoo
+  template:
+    metadata:
+      labels:
+        app: odoo
+    spec:
+      containers:
+      - name: odoo
+        image: {{ .Values.odoo.image }}
+        ports:
+        - containerPort: {{ .Values.odoo.port }}
+        env:
+        - name: HOST
+          value: postgres
+        - name: USER
+          value: {{ .Values.postgres.username }}
+        - name: PASSWORD
+          value: {{ .Values.postgres.password }}
+        resources:
+          requests:
+            memory: {{ .Values.odoo.resources.requests.memory }}
+            cpu: {{ .Values.odoo.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.odoo.resources.limits.memory }}
+            cpu: {{ .Values.odoo.resources.limits.cpu }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: odoo
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: odoo
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.odoo.port }}
+    nodePort: 30080

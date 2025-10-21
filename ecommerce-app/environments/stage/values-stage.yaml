@@ -1,0 +1,13 @@
+frontend:
+  image: nginx:alpine
+  replicas: 2
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+service:
+  type: NodePort

@@ -1,0 +1,18 @@
+frontend:
+  image: nginx:alpine
+  replicas: 1
+  port: 80
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+service:
+  type: NodePort
+  port: 80
+
+ingress:
+  enabled: false

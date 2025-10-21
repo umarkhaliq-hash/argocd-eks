@@ -1,0 +1,26 @@
+odoo:
+  image: odoo:16.0
+  replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+postgres:
+  image: postgres:13
+  database: odoo_dev
+  username: odoo_dev
+  password: dev123
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "100m"
+
+service:
+  type: NodePort
