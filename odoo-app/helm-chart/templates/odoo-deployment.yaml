@@ -19,6 +19,8 @@ spec:
         image: {{ .Values.odoo.image }}
         ports:
         - containerPort: {{ .Values.odoo.port }}
+        command: ["/entrypoint.sh"]
+        args: ["odoo", "-i", "base", "-d", "odoo", "--without-demo=all"]
         env:
         - name: HOST
           value: postgres
