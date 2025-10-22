@@ -11,9 +11,9 @@ odoo:
 
 postgres:
   image: postgres:13
-  database: odoo_dev
-  username: odoo_dev
-  password: dev123
+  database: odoo
+  username: odoo
+  password: odoo123
   resources:
     requests:
       memory: "128Mi"
