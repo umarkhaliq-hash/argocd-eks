@@ -1,7 +1,7 @@
 prestashop:
   image: prestashop/prestashop:8.1
   replicas: 1
-  domain: "aed7779ccfd3540c398ebccb04162fb1-1552371232.us-west-2.elb.amazonaws.com"
+  domain: "a245d772911184693886e9ed46dbce43-1102809817.us-west-2.elb.amazonaws.com"
   resources:
     requests:
       memory: "256Mi"
