@@ -26,6 +26,14 @@ spec:
           value: {{ .Values.postgres.username }}
         - name: POSTGRES_PASSWORD
           value: {{ .Values.postgres.password }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-data
+        emptyDir: {}
         resources:
           requests:
             memory: {{ .Values.postgres.resources.requests.memory }}
