@@ -1,28 +1,113 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecommerce-frontend
+  name: prestashop
   labels:
-    app: ecommerce-frontend
+    app: prestashop
 spec:
-  replicas: {{ .Values.frontend.replicas }}
+  replicas: {{ .Values.prestashop.replicas }}
   selector:
     matchLabels:
-      app: ecommerce-frontend
+      app: prestashop
   template:
     metadata:
       labels:
-        app: ecommerce-frontend
+        app: prestashop
     spec:
       containers:
-      - name: frontend
-        image: {{ .Values.frontend.image }}
+      - name: prestashop
+        image: {{ .Values.prestashop.image }}
         ports:
-        - containerPort: {{ .Values.frontend.port }}
+        - containerPort: {{ .Values.prestashop.port }}
+        env:
+        - name: DB_SERVER
+          value: mysql
+        - name: DB_NAME
+          value: {{ .Values.mysql.database }}
+        - name: DB_USER
+          value: {{ .Values.mysql.username }}
+        - name: DB_PASSWD
+          value: {{ .Values.mysql.password }}
+        - name: PS_INSTALL_AUTO
+          value: "1"
+        - name: PS_DOMAIN
+          value: "localhost:8080"
+        - name: ADMIN_MAIL
+          value: "admin@prestashop.com"
+        - name: ADMIN_PASSWD
+          value: "admin123"
         resources:
           requests:
-            memory: {{ .Values.frontend.resources.requests.memory }}
-            cpu: {{ .Values.frontend.resources.requests.cpu }}
+            memory: {{ .Values.prestashop.resources.requests.memory }}
+            cpu: {{ .Values.prestashop.resources.requests.cpu }}
           limits:
-            memory: {{ .Values.frontend.resources.limits.memory }}
-            cpu: {{ .Values.frontend.resources.limits.cpu }}
+            memory: {{ .Values.prestashop.resources.limits.memory }}
+            cpu: {{ .Values.prestashop.resources.limits.cpu }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prestashop
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: prestashop
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.prestashop.port }}
+    nodePort: 30090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: {{ .Values.mysql.image }}
+        ports:
+        - containerPort: {{ .Values.mysql.port }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.mysql.rootPassword }}
+        - name: MYSQL_DATABASE
+          value: {{ .Values.mysql.database }}
+        - name: MYSQL_USER
+          value: {{ .Values.mysql.username }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.mysql.password }}
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: {{ .Values.mysql.resources.requests.memory }}
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.mysql.resources.limits.memory }}
+            cpu: {{ .Values.mysql.resources.limits.cpu }}
+      volumes:
+      - name: mysql-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - port: {{ .Values.mysql.port }}
+    targetPort: {{ .Values.mysql.port }}
