@@ -31,7 +31,7 @@ spec:
         - name: PS_INSTALL_AUTO
           value: "1"
         - name: PS_DOMAIN
-          value: "{{ .Values.prestashop.domain }}"
+          value: "localhost:3000"
         - name: ADMIN_MAIL
           value: "admin@prestashop.com"
         - name: ADMIN_PASSWD

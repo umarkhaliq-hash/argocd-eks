@@ -25,4 +25,4 @@ mysql:
       cpu: "100m"
 
 service:
-  type: LoadBalancer
+  type: NodePort
