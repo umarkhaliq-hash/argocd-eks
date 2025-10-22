@@ -2,6 +2,7 @@ prestashop:
   image: prestashop/prestashop:8.1
   replicas: 1
   port: 80
+  domain: "localhost"
   resources:
     requests:
       memory: "512Mi"
@@ -26,7 +27,7 @@ mysql:
       cpu: "200m"
 
 service:
-  type: NodePort
+  type: LoadBalancer
   port: 80
 
 ingress:

@@ -1,0 +1,292 @@
+{
+  "id": null,
+  "uid": "complete-eks-monitoring",
+  "title": "Complete EKS & Applications Monitoring",
+  "tags": ["kubernetes", "eks", "applications", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Cluster Health Score",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(up{job=\"kubernetes-nodes\"}) / count(up{job=\"kubernetes-nodes\"}) * 100",
+          "legendFormat": "Health %",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 70},
+              {"color": "green", "value": 90}
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Total Nodes",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(kube_node_info)",
+          "legendFormat": "Nodes",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 4, "y": 0}
+    },
+    {
+      "id": 3,
+      "title": "Running Pods",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+          "legendFormat": "Running",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 8, "y": 0}
+    },
+    {
+      "id": 4,
+      "title": "Failed Pods",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{phase=\"Failed\"})",
+          "legendFormat": "Failed",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 12, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": 0},
+              {"color": "red", "value": 1}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Pending Pods",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{phase=\"Pending\"})",
+          "legendFormat": "Pending",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 16, "y": 0}
+    },
+    {
+      "id": 6,
+      "title": "Namespaces",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(count by (namespace) (kube_pod_info))",
+          "legendFormat": "Namespaces",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 6, "w": 4, "x": 20, "y": 0}
+    },
+    {
+      "id": 7,
+      "title": "CPU Usage by All Applications",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m])) by (namespace, container) * 100",
+          "legendFormat": "{{namespace}}/{{container}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Memory Usage by All Applications",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\"}) by (namespace, container) / 1024 / 1024",
+          "legendFormat": "{{namespace}}/{{container}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "decbytes"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Node CPU Usage %",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Node Memory Usage %",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "100 * (1 - ((node_memory_MemAvailable_bytes) / (node_memory_MemTotal_bytes)))",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Disk Usage %",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "100 - ((node_filesystem_avail_bytes{mountpoint=\"/\"} * 100) / node_filesystem_size_bytes{mountpoint=\"/\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "title": "Pods by Namespace",
+      "type": "piechart",
+      "targets": [
+        {
+          "expr": "sum by (namespace) (kube_pod_info)",
+          "legendFormat": "{{namespace}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 22}
+    },
+    {
+      "id": 13,
+      "title": "Network I/O by All Apps",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{container!=\"POD\"}[5m])) by (namespace)",
+          "legendFormat": "{{namespace}} - RX",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{container!=\"POD\"}[5m])) by (namespace)",
+          "legendFormat": "{{namespace}} - TX",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 22},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "binBps"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "Container Restarts",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_container_status_restarts_total) by (namespace, pod, container)",
+          "legendFormat": "{{namespace}}/{{pod}}/{{container}}",
+          "refId": "A",
+          "format": "table"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 22}
+    },
+    {
+      "id": 15,
+      "title": "Top CPU Consuming Pods",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "topk(10, sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m])) by (namespace, pod) * 100)",
+          "legendFormat": "{{namespace}}/{{pod}}",
+          "refId": "A",
+          "format": "table"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 30}
+    },
+    {
+      "id": 16,
+      "title": "Top Memory Consuming Pods",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "topk(10, sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\"}) by (namespace, pod) / 1024 / 1024)",
+          "legendFormat": "{{namespace}}/{{pod}}",
+          "refId": "A",
+          "format": "table"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 30}
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "refresh": "30s"
+}
